@@ -1,410 +1,683 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meu App Treino Completo</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Meu Treino</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-body{background:#050816;color:#fff;padding:18px}
-.container{max-width:1050px;margin:auto}
-header{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;position:sticky;top:0;background:#050816;padding:12px 0;z-index:10}
-.tab{padding:14px 22px;border-radius:16px;background:#151b2b;border:1px solid rgba(255,255,255,.08);cursor:pointer;font-weight:700}
-.tab.active{background:linear-gradient(90deg,#7b4dff,#00c2ff)}
-.screen{display:none}.screen.active{display:block}
-.card{background:linear-gradient(180deg,#1a2032,#111624);padding:24px;border-radius:28px;border:1px solid rgba(255,255,255,.08);margin-bottom:22px}
-h1{font-size:24px;margin-bottom:8px}.subtitle{color:#aab2c5;margin-bottom:20px}
-.row{display:flex;gap:12px;flex-wrap:wrap}
-input,select,textarea{background:#202637;border:1px solid rgba(255,255,255,.06);padding:14px;border-radius:14px;color:white;font-size:14px}
-input,textarea{flex:1}button{border:none;padding:14px 18px;border-radius:14px;font-weight:700;cursor:pointer;color:white}
-.primary{background:linear-gradient(90deg,#7b4dff,#00c2ff)}.danger{background:#ff334f}.success{background:#22c55e;color:#06100a}
-.list-item,.history-item{background:#202637;padding:14px;border-radius:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.history-item{display:block}.history-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}.history-edit-box{display:grid;gap:10px;margin-top:12px}.history-edit-box select,.history-edit-box input{width:100%}
-.tag{display:inline-block;padding:6px 10px;background:#7b4dff;border-radius:10px;font-size:12px;margin-left:8px}small{color:#9ba3ba}
+:root{
+  --bg:#07111f;
+  --panel:#0b1628;
+  --panel2:#101d32;
+  --card:#13223a;
+  --card2:#0d1728;
+  --line:rgba(255,255,255,.12);
+  --text:#f8fafc;
+  --muted:#9fb0c7;
+  --primary:#19e58c;
+  --secondary:#1aa7ff;
+  --accent:#ff7a18;
+  --red:#ff3b5f;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,Arial,Helvetica,sans-serif}
+body{
+  min-height:100vh;
+  color:var(--text);
+  padding:18px;
+  padding-top:26px;
+  background:
+    linear-gradient(135deg,rgba(25,229,140,.14),transparent 28%),
+    radial-gradient(circle at 90% 8%,rgba(26,167,255,.22),transparent 30%),
+    radial-gradient(circle at 20% 100%,rgba(255,122,24,.14),transparent 26%),
+    #06101e;
+  overflow-x:hidden;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(120deg,transparent 0 46%,rgba(255,255,255,.045) 46% 47%,transparent 47% 100%),
+    repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 1px,transparent 1px 24px);
+  opacity:.45;
+}
 
-/* Crossfit visualização / edição */
-.cross-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-.cross-day-title{font-size:26px;font-weight:800}
-.mode-btn{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;border:none;cursor:pointer}
-.edit-btn{background:#151b2b;color:#fff;border:2px solid #fff}.save-btn{background:#18f57d;color:#04120a}
-.day-tabs{display:flex;gap:10px;overflow:auto;margin-bottom:20px;padding-bottom:4px}
-.day-tab{white-space:nowrap;padding:12px 16px;border-radius:14px;background:#151b2b;cursor:pointer;border:1px solid rgba(255,255,255,.07)}
-.day-tab.active{background:#1dff83;color:#06100a;font-weight:800}
-.mode-label{font-size:13px;color:#94a3b8;margin-bottom:20px}
-.cross-section{margin-bottom:34px}
-.cross-section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:12px}
-.cross-section-title{display:flex;align-items:center;gap:10px;font-size:28px;font-weight:800}
-.cross-section-title input{font-size:20px;font-weight:800}
-.time-pill{background:#0e2f1e;color:#18f57d;padding:8px 14px;border-radius:14px;font-weight:700}
-.cross-line{height:1px;background:rgba(255,255,255,.1);margin:14px 0 18px}
-.exercise-card-view{background:linear-gradient(90deg,#202636,#2a3144);border-radius:18px;padding:18px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.exercise-left{display:flex;align-items:center;gap:16px}.exercise-icon{background:#121826;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center}.arrow{opacity:.5;font-size:24px}
-.exercise-info{margin-top:6px;color:#9ba3ba;font-size:13px;line-height:1.4}
-.exercise-info-bar{display:grid;grid-template-columns:1.2fr 1.5fr .9fr 1.2fr;gap:8px;margin:8px 0 14px;color:#94a3b8;font-size:12px}
-.exercise-info-bar span{background:#111827;border-radius:10px;padding:9px 10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.edit-card{background:#1f2637;padding:18px;border-radius:20px;margin-bottom:16px;position:relative}
-.circle-delete{background:#ff3131;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0}
-.delete-abs{position:absolute;right:12px;top:12px}
-.youtube-box{background:#111827;padding:12px 16px;border-radius:12px;border:2px solid #ff0000;color:#fff;display:inline-block;margin:10px 0}
-.add-btn{width:100%;padding:16px;border-radius:16px;background:transparent;border:1px dashed rgba(255,255,255,.15);color:#cbd5e1;margin-top:12px;cursor:pointer}
-iframe{width:100%;height:230px;border:none;border-radius:14px;margin:8px 0 18px}
+.app-title{
+  position:relative;
+  width:max-content;
+  max-width:100%;
+  margin:12px auto 30px;
+  text-align:center;
+  font-size:clamp(38px,7vw,74px);
+  font-weight:1000;
+  letter-spacing:4px;
+  line-height:.95;
+  text-transform:uppercase;
+  color:#f8fafc;
+  font-style:italic;
+  transform:skewX(-8deg);
+  text-shadow:
+    0 2px 0 rgba(255,255,255,.04),
+    0 12px 28px rgba(0,0,0,.45);
+}
+.app-title::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:-14px;
+  width:68%;
+  height:6px;
+  transform:translateX(-50%) skewX(-18deg);
+  border-radius:999px;
+  background:linear-gradient(90deg,#19e58c,#1aa7ff);
+  box-shadow:0 0 22px rgba(25,229,140,.16);
+}
+.app-title::after{
+  content:"TREINO • PERFORMANCE • EVOLUÇÃO";
+  position:absolute;
+  left:50%;
+  bottom:-40px;
+  transform:translateX(-50%);
+  white-space:nowrap;
+  color:#8ea2bf;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:4px;
+}
+100%{background-position:300% 50%}
+}
+.container{
+  position:relative;
+  max-width:1240px;
+  margin:0 auto;
+  background:
+    linear-gradient(180deg,rgba(15,29,52,.96),rgba(7,17,31,.98));
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:26px;
+  box-shadow:0 24px 90px rgba(0,0,0,.42);
+  padding:34px;
+  margin-top:44px;
+  overflow:hidden;
+}
+.container::before{
+  content:"";
+  position:absolute;
+  top:-90px;
+  right:-120px;
+  width:340px;
+  height:340px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(25,229,140,.22),transparent 65%);
+}
+.container::after{
+  content:"PERFORMANCE";
+  position:absolute;
+  right:22px;
+  bottom:18px;
+  font-size:78px;
+  font-weight:1000;
+  letter-spacing:3px;
+  color:rgba(255,255,255,.025);
+  pointer-events:none;
+}
+.topbar{
+  position:relative;
+  z-index:1;
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:18px;
+  margin-bottom:24px;
+}
 
-/* Treino */
-.person-tabs{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
-.person-btn{padding:12px 18px;background:#202637;border-radius:12px;cursor:pointer}.person-btn.active{background:linear-gradient(90deg,#7b4dff,#00c2ff)}
-.exercise{background:#141a29;padding:11px;border-radius:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.category-title-row{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
-.category-title-row input{max-width:220px;font-size:18px;font-weight:800}
-.category-actions{display:flex;gap:8px;flex-wrap:wrap}
-.add-category-box{margin-bottom:20px}
-@media(max-width:620px){body{padding:10px}.card{padding:16px;border-radius:22px}.cross-section-header{align-items:flex-start;flex-direction:column}iframe{height:200px}.exercise-info-bar{grid-template-columns:1fr}}
+.actions{display:flex;gap:14px;align-items:center}
+.round-btn{
+  width:68px;
+  height:68px;
+  border-radius:20px;
+  border:none;
+  cursor:pointer;
+  font-size:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:.2s;
+  transform:skew(-6deg);
+}
+.round-btn:hover{transform:skew(-6deg) translateY(-2px)}
+.edit-btn{
+  background:linear-gradient(135deg,var(--secondary),#1764ff);
+  color:#fff;
+  box-shadow:0 14px 32px rgba(26,167,255,.25);
+}
+.save-btn{
+  background:linear-gradient(135deg,var(--primary),#0fb86f);
+  color:#03140c;
+  box-shadow:0 14px 32px rgba(25,229,140,.25);
+}
+.mode{
+  position:relative;
+  z-index:1;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:var(--muted);
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:999px;
+  padding:10px 15px;
+  font-size:15px;
+  font-weight:900;
+  margin-bottom:18px;
+}
+.mode span{color:var(--primary);text-transform:uppercase}
+.day-tabs{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:10px;
+  margin-bottom:30px;
+}
+.day-tab{
+  background:linear-gradient(180deg,#17263f,#0f1a2c);
+  color:#d8e3f2;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:15px 10px;
+  text-align:center;
+  cursor:pointer;
+  font-weight:1000;
+  text-transform:uppercase;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+  transition:.18s;
+}
+.day-tab:hover{border-color:rgba(25,229,140,.45);transform:translateY(-1px)}
+.day-tab.active{
+  background:linear-gradient(135deg,var(--primary),#5cffba);
+  color:#03140c;
+  box-shadow:0 12px 30px rgba(25,229,140,.22);
+}
+.section{
+  position:relative;
+  z-index:1;
+  margin:30px 0 38px;
+  background:rgba(255,255,255,.025);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;
+  padding:20px;
+}
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:16px;
+  margin-bottom:16px;
+}
+.section-title{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:30px;
+  font-weight:1000;
+  text-transform:uppercase;
+}
+.section-icon{
+  width:52px;
+  height:52px;
+  border-radius:17px;
+  background:linear-gradient(135deg,rgba(25,229,140,.18),rgba(26,167,255,.14));
+  border:1px solid rgba(25,229,140,.42);
+  color:var(--primary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+}
+.time-pill{
+  color:#03140c;
+  background:linear-gradient(135deg,var(--primary),#5cffba);
+  padding:10px 18px;
+  border-radius:999px;
+  font-weight:1000;
+  min-width:94px;
+  text-align:center;
+  box-shadow:0 12px 28px rgba(25,229,140,.18);
+}
+.exercise-view{
+  display:grid;
+  grid-template-columns:1.18fr 1.32fr;
+  gap:12px;
+  margin-bottom:14px;
+}
+.exercise-main{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:16px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#172842,#101b2d);
+  border:1px solid rgba(255,255,255,.08);
+}
+.exercise-left{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+.exercise-icon{
+  width:70px;
+  height:70px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#091426,#132a45);
+  border:1px solid rgba(255,255,255,.08);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+}
+.exercise-name{
+  font-size:23px;
+  font-weight:1000;
+  margin-bottom:6px;
+}
+.exercise-info{
+  color:#c9d5e7;
+  line-height:1.45;
+  white-space:pre-line;
+}
+.arrow{
+  font-size:34px;
+  color:var(--accent);
+  opacity:.95;
+}
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+.metric{
+  background:linear-gradient(180deg,#17263f,#0f1a2c);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  padding:12px 10px;
+  min-height:102px;
+}
+.metric small{
+  color:#aebbd0;
+  text-transform:uppercase;
+  font-weight:1000;
+  font-size:12px;
+  margin-bottom:12px;
+}
+.metric strong{
+  font-size:24px;
+  color:#fff;
+}
+.edit-section{
+  position:relative;
+  z-index:1;
+  background:linear-gradient(180deg,#15243d,#101b2e);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:22px;
+  padding:18px;
+  margin:18px 0;
+}
+.edit-grid{
+  display:grid;
+  grid-template-columns:70px 1fr 100px 46px;
+  gap:12px;
+  align-items:center;
+}
+.exercise-edit-row{
+  display:grid;
+  grid-template-columns:62px 1.1fr 1.35fr .7fr .85fr .85fr .85fr 46px;
+  gap:12px;
+  align-items:center;
+  margin-top:12px;
+}
+input,textarea,select{
+  width:100%;
+  background:#0b1526;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:14px;
+  color:white;
+  padding:13px 14px;
+  font-size:15px;
+  outline:none;
+}
+input:focus,textarea:focus{
+  border-color:rgba(25,229,140,.8);
+  box-shadow:0 0 0 3px rgba(25,229,140,.10);
+}
+textarea{resize:vertical;min-height:54px}
+.del{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  border:none;
+  background:linear-gradient(135deg,var(--red),#ff6b7e);
+  color:white;
+  font-size:24px;
+  font-weight:1000;
+  cursor:pointer;
+}
+.add-btn{
+  display:block;
+  width:42%;
+  margin:20px auto 0;
+  background:rgba(255,255,255,.04);
+  border:1px dashed rgba(25,229,140,.55);
+  border-radius:16px;
+  color:#dfffee;
+  font-weight:1000;
+  font-size:17px;
+  padding:15px;
+  cursor:pointer;
+  text-transform:uppercase;
+}
+.add-btn:hover{background:rgba(25,229,140,.09)}
+.add-section-btn{width:100%;margin-top:28px}
+.youtube{
+  margin-top:12px;
+  width:100%;
+  height:260px;
+  border:0;
+  border-radius:18px;
+}
+.empty{
+  color:var(--muted);
+  padding:18px;
+  background:rgba(255,255,255,.035);
+  border-radius:16px;
+}
+@media(max-width:980px){
+  .container{padding:22px}
+  .brand{font-size:32px}
+  .round-btn{width:58px;height:58px;font-size:24px}
+  .day-tabs{grid-template-columns:repeat(3,1fr)}
+  .exercise-view{grid-template-columns:1fr}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .edit-grid,.exercise-edit-row{grid-template-columns:1fr}
+  .add-btn{width:100%}
+}
+@media(max-width:540px){
+  body{padding:10px}
+  .app-title{font-size:34px}
+  .topbar{align-items:flex-start}
+  .brand{font-size:28px}
+  .actions{gap:10px}
+  .section{padding:14px}
+  .section-title{font-size:24px}
+  .day-tabs{grid-template-columns:repeat(2,1fr)}
+}
 </style>
 </head>
 <body>
-<div class="container">
-<header>
-<div class="tab active" onclick="showScreen('inicio',this)">Início</div>
-<div class="tab" onclick="showScreen('crossfit',this)">Crossfit</div>
-<div class="tab" onclick="showScreen('treino',this)">Treino</div>
-</header>
+<h1 class="app-title">TREINO</h1>
 
-<section id="inicio" class="screen active">
-<div class="card">
-<h1>Adicionar registro rápido</h1>
-<div class="subtitle">Use para lançar um treino de musculação direto no histórico.</div>
-<div class="row">
-<select id="alunoSelect"></select>
-<input type="text" id="treinoRapido" placeholder="Exercício ou treino">
-<button class="primary" onclick="salvarRegistroRapido()">Salvar</button>
-</div>
-</div>
+<main class="container">
+  <div class="topbar">
+    <div class="actions">
+      <button id="editBtn" class="round-btn edit-btn" onclick="toggleEdit()" title="Editar">⚡</button>    </div>
+  </div>
 
-<div class="card">
-<h1>Gerenciar alunos</h1>
-<div id="listaAlunos"></div>
-<div class="row" style="margin-top:15px">
-<input type="text" id="novoAluno" placeholder="Novo aluno">
-<button class="success" onclick="adicionarAluno()">Adicionar</button>
-</div>
-</div>
-
-<div class="card">
-<h1>Histórico geral dos treinos</h1>
-<div id="historicoGeral"></div>
-</div>
-</section>
-
-<section id="crossfit" class="screen">
-<div class="cross-top">
-<div class="cross-day-title" id="crossDayTitle">💪 Segunda-feira</div>
-<button id="crossModeBtn" class="mode-btn edit-btn" onclick="toggleCrossEdit()">✏️</button>
-</div>
-<div class="day-tabs" id="crossDayTabs"></div>
-<div id="crossModeText" class="mode-label">Modo visualização</div>
-<div id="crossfitSections"></div>
-</section>
-
-<section id="treino" class="screen">
-<div class="card">
-<div class="cross-top">
-<div>
-<h1>Treinos de Musculação</h1>
-<div class="subtitle" style="margin-bottom:0">Selecione um aluno e organize as categorias de treino.</div>
-</div>
-<button id="treinoModeBtn" class="mode-btn edit-btn" onclick="toggleTreinoEdit()">✏️</button>
-</div>
-<div id="treinoModeText" class="mode-label">Modo visualização</div>
-<div class="person-tabs" id="personTabs"></div>
-<div id="treinoArea"></div>
-</div>
-</section>
-</div>
+  <div class="mode">Modo: <span id="modeText">visualização</span></div>
+  <div class="day-tabs" id="dayTabs"></div>
+  <div id="content"></div>
+</main>
 
 <script>
-let alunos=JSON.parse(localStorage.getItem("alunos"))||["Joao","Gabriel","Pedro"];
-let historico=JSON.parse(localStorage.getItem("historico"))||[];
-const dias=["Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
-let crossfit=JSON.parse(localStorage.getItem("crossfitRealCompleto"))||{};
-dias.forEach(d=>{if(!crossfit[d])crossfit[d]=[
-{icon:"🔥",title:"Warm-up",time:"15 min",description:"Upper Body + 3 Rounds + AMRAP final",exercises:[{name:"Novo exercício",info:"Informações do exercício",youtube:"",url:""}]},
-{icon:"🧘",title:"Alongamento",time:"5 min",description:"",exercises:[{name:"Novo exercício",info:"",youtube:"",url:""}]},
-{icon:"🎯",title:"Skill",time:"5 min",description:"",exercises:[{name:"Novo exercício",info:"",youtube:"",url:""}]},
-{icon:"⚡",title:"WOD",time:"20 min",description:"",exercises:[{name:"Novo exercício",info:"",youtube:"",url:""}]},
-{icon:"📋",title:"Complemento",time:"5 min",description:"",exercises:[{name:"Novo exercício",info:"",youtube:"",url:""}]}
-]});
-let treinos=JSON.parse(localStorage.getItem("treinos"))||{};
-alunos.forEach(n=>{if(!treinos[n])treinos[n]={A:[],B:[],C:[],D:[],E:[]}});
-let currentPerson=alunos[0]||"", currentDay=dias[0], crossEditMode=false, treinoEditMode=false, editingHistoryIndex=null;
+const dias = ["Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+let currentDay = dias[0];
+let editMode = false;
 
-function normalizeCrossfitExercises(){
-dias.forEach(d=>{
-(crossfit[d]||[]).forEach(sec=>{
-(sec.exercises||[]).forEach(ex=>{
-if(ex.info===undefined) ex.info="";
-if(ex.url===undefined) ex.url="";
-if(ex.youtube===undefined) ex.youtube="";
-});
-});
-});
-}
-normalizeCrossfitExercises();
-dias.forEach(d=>{
-(crossfit[d]||[]).forEach(sec=>{
-sec.icon = emojiCategoria(sec.title);
-});
-});
+let treinos = JSON.parse(localStorage.getItem("meuTreinoCrossfit")) || {
+  "Segunda":[
+    {
+      title:"Aquecimento",
+      icon:"🔥",
+      time:"10",
+      exercises:[
+        {icon:"🏃",name:"Mobilidade",info:"Mobilidade de ombro, quadril e tornozelo\\n+ ativação",series:"2",reps:"–",carga:"–",descanso:"–",youtube:""}
+      ]
+    },
+    {
+      title:"WOD",
+      icon:"⚡",
+      time:"15",
+      exercises:[
+        {icon:"🏋️",name:"For Time",info:"21 - 15 - 9\\nThruster\\nPull Up",series:"–",reps:"–",carga:"–",descanso:"–",youtube:""}
+      ]
+    }
+  ],
+  "Terça":[], "Quarta":[], "Quinta":[], "Sexta":[], "Sábado":[], "Domingo":[]
+};
+
+dias.forEach(d=>{ if(!treinos[d]) treinos[d]=[]; });
 
 function saveData(){
-localStorage.setItem("alunos",JSON.stringify(alunos));
-localStorage.setItem("historico",JSON.stringify(historico));
-localStorage.setItem("crossfitRealCompleto",JSON.stringify(crossfit));
-localStorage.setItem("treinos",JSON.stringify(treinos));
+  localStorage.setItem("meuTreinoCrossfit", JSON.stringify(treinos));
 }
-function showScreen(id,el){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));el.classList.add("active")}
 
-function escapeHtml(str){return String(str||"").replaceAll("&","&amp;").replaceAll('"',"&quot;").replaceAll("<","&lt;").replaceAll(">","&gt;")}
+function escapeHtml(str){
+  return String(str ?? "").replaceAll("&","&amp;").replaceAll('"',"&quot;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+}
+
 function youtubeEmbed(url){
-if(!url)return "";
-let id="";
-if(url.includes("watch?v=")) id=url.split("watch?v=")[1].split("&")[0];
-else if(url.includes("youtu.be/")) id=url.split("youtu.be/")[1].split("?")[0];
-else if(url.includes("/shorts/")) id=url.split("/shorts/")[1].split("?")[0];
-else if(url.includes("/embed/")) id=url.split("/embed/")[1].split("?")[0];
-return id ? "https://www.youtube.com/embed/"+id : "";
+  if(!url) return "";
+  let id="";
+  if(url.includes("watch?v=")) id=url.split("watch?v=")[1].split("&")[0];
+  else if(url.includes("youtu.be/")) id=url.split("youtu.be/")[1].split("?")[0];
+  else if(url.includes("/shorts/")) id=url.split("/shorts/")[1].split("?")[0];
+  else if(url.includes("/embed/")) id=url.split("/embed/")[1].split("?")[0];
+  return id ? "https://www.youtube.com/embed/"+id : "";
 }
 
-function emojiCategoria(nome){
-const n = String(nome||"").trim().toLowerCase();
 
-if(n === "warm-up" || n === "warmup" || n === "aquecimento") return "🔥";
-if(n === "alongamento") return "🧘";
-if(n === "skill") return "🎯";
-if(n === "wod") return "⚡";
-if(n === "complemento") return "📋";
+const tiposSecao = [
+  {nome:"Aquecimento", icon:"🔥"},
+  {nome:"Warm-up", icon:"🏃"},
+  {nome:"Skill", icon:"🎯"},
+  {nome:"WOD", icon:"⚡"}
+];
 
-return "🏋️";
+function iconBySectionName(nome){
+  const item = tiposSecao.find(t => t.nome.toLowerCase() === String(nome || "").toLowerCase());
+  return item ? item.icon : "💪";
 }
 
-/* Início / alunos / histórico */
-function renderAlunos(){
-const select=document.getElementById("alunoSelect"),lista=document.getElementById("listaAlunos");select.innerHTML="";lista.innerHTML="";
-alunos.forEach((nome,index)=>{select.innerHTML+=`<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`;lista.innerHTML+=`<div class="list-item"><div>${escapeHtml(nome)}</div><button class="danger" onclick="removerAluno(${index})">Remover</button></div>`});
-renderPersonTabs();saveData();
-}
-function adicionarAluno(){const nome=document.getElementById("novoAluno").value.trim();if(!nome)return;alunos.push(nome);treinos[nome]={A:[],B:[],C:[],D:[],E:[]};if(!currentPerson)currentPerson=nome;document.getElementById("novoAluno").value="";renderAlunos();renderTreinoArea()}
-function removerAluno(index){const nome=alunos[index];delete treinos[nome];alunos.splice(index,1);if(currentPerson===nome)currentPerson=alunos[0]||"";renderAlunos();renderTreinoArea()}
-function salvarRegistroRapido(){const aluno=document.getElementById("alunoSelect").value,treino=document.getElementById("treinoRapido").value.trim();if(!aluno||!treino)return;historico.unshift({aluno,treino,data:new Date().toLocaleString("pt-BR")});document.getElementById("treinoRapido").value="";renderHistorico()}
-function renderHistorico(){
-const area=document.getElementById("historicoGeral");area.innerHTML="";
-if(historico.length===0){area.innerHTML='<div class="subtitle">Nenhum treino registrado ainda.</div>';saveData();return}
-historico.forEach((item,index)=>{
-if(editingHistoryIndex===index){
-const opts=alunos.map(n=>`<option value="${escapeHtml(n)}" ${item.aluno===n?"selected":""}>${escapeHtml(n)}</option>`).join("");
-area.innerHTML+=`<div class="history-item"><strong>Editando registro</strong><div class="history-edit-box"><select id="editAluno-${index}">${opts}</select><input id="editTreino-${index}" value="${escapeHtml(item.treino)}" placeholder="Exercício ou treino"><input id="editData-${index}" value="${escapeHtml(item.data)}" placeholder="Data"></div><div class="history-actions"><button class="success" onclick="salvarEdicaoHistorico(${index})">Salvar edição</button><button class="danger" onclick="cancelarEdicaoHistorico()">Cancelar</button></div></div>`;
-}else{
-area.innerHTML+=`<div class="history-item"><strong>${escapeHtml(item.aluno)}</strong><span class="tag">${escapeHtml(item.treino)}</span><br><br><small>${escapeHtml(item.data)}</small><div class="history-actions"><button class="primary" onclick="editarHistorico(${index})">Editar</button><button class="danger" onclick="excluirHistorico(${index})">Excluir</button></div></div>`;
-}});
-saveData();
-}
-function editarHistorico(i){editingHistoryIndex=i;renderHistorico()}
-function cancelarEdicaoHistorico(){editingHistoryIndex=null;renderHistorico()}
-function salvarEdicaoHistorico(i){const aluno=document.getElementById("editAluno-"+i).value,treino=document.getElementById("editTreino-"+i).value.trim(),data=document.getElementById("editData-"+i).value.trim();if(!treino)return;historico[i]={aluno,treino,data:data||new Date().toLocaleString("pt-BR")};editingHistoryIndex=null;renderHistorico()}
-function excluirHistorico(i){historico.splice(i,1);editingHistoryIndex=null;renderHistorico()}
-
-/* Crossfit */
-function toggleCrossEdit(){
-crossEditMode=!crossEditMode;
-const btn=document.getElementById("crossModeBtn"),text=document.getElementById("crossModeText");
-if(crossEditMode){btn.className="mode-btn save-btn";btn.innerHTML="💾";text.innerHTML="Modo edição"}else{btn.className="mode-btn edit-btn";btn.innerHTML="✏️";text.innerHTML="Modo visualização"}
-renderCrossfit();
-}
-function renderCrossDayTabs(){
-const area=document.getElementById("crossDayTabs");area.innerHTML="";
-dias.forEach(d=>{const div=document.createElement("div");div.className="day-tab "+(d===currentDay?"active":"");div.innerText=d;div.onclick=()=>{currentDay=d;renderCrossDayTabs();renderCrossfit()};area.appendChild(div)});
-}
-function renderCrossfit(){
-document.getElementById("crossDayTitle").innerText="💪 "+currentDay;
-const area=document.getElementById("crossfitSections");area.innerHTML="";
-crossfit[currentDay].forEach((section,sIndex)=>{
-let html=`<div class="cross-section"><div class="cross-section-header"><div><div class="cross-section-title"><span>${section.icon}</span>${crossEditMode?`<input value="${escapeHtml(section.title)}" onchange="updateCrossSection(${sIndex},'title',this.value)" placeholder="Nome da seção">`:`<span>${escapeHtml(section.title)}</span>`}</div><div class="subtitle">${crossEditMode?`<input value="${escapeHtml(section.description)}" onchange="updateCrossSection(${sIndex},'description',this.value)" placeholder="Descrição da seção">`:escapeHtml(section.description)}</div></div><div class="row" style="align-items:center">${crossEditMode?`<input style="width:95px;flex:0" value="${escapeHtml(section.time)}" onchange="updateCrossSection(${sIndex},'time',this.value)" placeholder="5 min"><button class="circle-delete" onclick="removeCrossSection(${sIndex})">🗑</button>`:`<div class="time-pill">${escapeHtml(section.time)}</div>`}</div></div><div class="cross-line"></div>`;
-section.exercises.forEach((exercise,eIndex)=>{
-const embed=youtubeEmbed(exercise.youtube);
-if(crossEditMode){
-html+=`<div class="edit-card">
-<button class="circle-delete delete-abs" onclick="removeCrossExercise(${sIndex},${eIndex})">🗑</button>
-<div class="exercise-info-bar">
-<span>Novo exercício</span><span>Informações</span><span>YouTube</span><span>URL</span>
-</div>
-<input value="${escapeHtml(exercise.name)}" oninput="updateCrossExercise(${sIndex},${eIndex},'name',this.value)" placeholder="Novo exercício" style="padding-right:46px">
-<input value="${escapeHtml(exercise.info)}" oninput="updateCrossExercise(${sIndex},${eIndex},'info',this.value)" placeholder="Informações">
-<div class="youtube-box">▶ YouTube</div>
-<input value="${escapeHtml(exercise.youtube)}" oninput="updateCrossExercise(${sIndex},${eIndex},'youtube',this.value)" placeholder="Cole a URL do YouTube">
-<input value="${escapeHtml(exercise.url)}" oninput="updateCrossExercise(${sIndex},${eIndex},'url',this.value)" placeholder="URL extra / imagem / referência">
-${embed?`<iframe src="${embed}" allowfullscreen></iframe>`:""}
-</div>`;
-}else{
-html+=`<div class="exercise-card-view"><div class="exercise-left"><div class="exercise-icon">🏋️</div><div><div style="font-weight:700">${escapeHtml(exercise.name)}</div>${exercise.info?`<div class="exercise-info">${escapeHtml(exercise.info)}</div>`:""}${exercise.url?`<div class="exercise-info">🔗 ${escapeHtml(exercise.url)}</div>`:""}</div></div><div class="arrow">›</div></div>${embed?`<iframe src="${embed}" allowfullscreen></iframe>`:""}`;
-}});
-if(crossEditMode)html+=`<button class="add-btn" onclick="addCrossExercise(${sIndex})">+ Adicionar exercício</button>`;
-html+=`</div>`;
-area.innerHTML+=html;
-});
-if(crossEditMode)area.innerHTML+=`<button class="add-btn" onclick="addCrossSection()">+ Adicionar seção</button>`;
-saveData();
-}
-function updateCrossSection(i,k,v){
-crossfit[currentDay][i][k]=v;
-
-if(k === "title"){
-crossfit[currentDay][i].icon = emojiCategoria(v);
+function sectionOptions(selected){
+  return tiposSecao.map(t => `<option value="${escapeHtml(t.nome)}" ${String(selected||"").toLowerCase() === t.nome.toLowerCase() ? "selected" : ""}>${escapeHtml(t.icon + " " + t.nome)}</option>`).join("");
 }
 
-saveData();
-renderCrossfit();
-}
-function addCrossSection(){crossfit[currentDay].push({icon:"🔥",title:"Nova seção",time:"5 min",description:"",exercises:[]});renderCrossfit()}
-function removeCrossSection(i){crossfit[currentDay].splice(i,1);renderCrossfit()}
-function addCrossExercise(i){crossfit[currentDay][i].exercises.push({name:"Novo exercício",info:"",youtube:"",url:""});renderCrossfit()}
-function removeCrossExercise(s,e){crossfit[currentDay][s].exercises.splice(e,1);renderCrossfit()}
-function updateCrossExercise(s,e,k,v){
-crossfit[currentDay][s].exercises[e][k]=v;
-saveData();
+function updateSectionType(index, value){
+  treinos[currentDay][index].title = value;
+  treinos[currentDay][index].icon = iconBySectionName(value);
+  saveData();
+  render();
 }
 
-/* Treino musculação */
-function renderPersonTabs(){const area=document.getElementById("personTabs");area.innerHTML="";alunos.forEach(nome=>{const div=document.createElement("div");div.className="person-btn "+(currentPerson===nome?"active":"");div.innerText=nome;div.onclick=()=>{currentPerson=nome;renderPersonTabs();renderTreinoArea()};area.appendChild(div)})}
-function toggleTreinoEdit(){
-treinoEditMode=!treinoEditMode;
-const btn=document.getElementById("treinoModeBtn");
-const text=document.getElementById("treinoModeText");
-
-if(treinoEditMode){
-btn.className="mode-btn save-btn";
-btn.innerHTML="💾";
-text.innerHTML="Modo edição";
-}else{
-btn.className="mode-btn edit-btn";
-btn.innerHTML="✏️";
-text.innerHTML="Modo visualização";
+function renderTabs(){
+  const area = document.getElementById("dayTabs");
+  area.innerHTML = "";
+  dias.forEach(d=>{
+    const btn = document.createElement("div");
+    btn.className = "day-tab" + (d === currentDay ? " active" : "");
+    btn.innerText = d;
+    btn.onclick = () => {
+      currentDay = d;
+      renderTabs();
+      render();
+    };
+    area.appendChild(btn);
+  });
 }
 
-renderTreinoArea();
+function toggleEdit(){
+  editMode = !editMode;
+  document.getElementById("editBtn").className = editMode ? "round-btn save-btn" : "round-btn edit-btn";
+  document.getElementById("editBtn").innerHTML = editMode ? "💾" : "⚡";
+  document.getElementById("modeText").innerText = editMode ? "edição" : "visualização";
+  if(!editMode) saveData();
+  render();
 }
 
-function renderTreinoArea(){
-const area=document.getElementById("treinoArea");
-if(!currentPerson){area.innerHTML="<p>Nenhum aluno cadastrado.</p>";return}
+function render(){
+  const area = document.getElementById("content");
+  area.innerHTML = "";
+  const sections = treinos[currentDay];
 
-let html="";
+  if(!sections.length && !editMode){
+    area.innerHTML = '<div class="empty">Nenhum treino cadastrado para este dia.</div>';
+    return;
+  }
 
-if(treinoEditMode){
-html+=`<div class="card add-category-box">
-<h1>Adicionar categoria de treino</h1>
-<div class="row">
-<input id="novaCategoriaTreino" placeholder="Ex: A, B, C, Full Body, Inferiores">
-<button class="success" onclick="addCategoriaTreino()">Adicionar categoria</button>
-</div>
-</div>`;
+  sections.forEach((section, sIndex)=>{
+    if(editMode){
+      area.innerHTML += renderEditSection(section, sIndex);
+    }else{
+      area.innerHTML += renderViewSection(section, sIndex);
+    }
+  });
+
+  if(editMode){
+    area.innerHTML += '<button class="add-btn add-section-btn" onclick="addSection()">+ adicionar seção</button>';
+  }
+
+  saveData();
 }
 
-Object.keys(treinos[currentPerson]).forEach((letra)=>{
-let exs="";
-treinos[currentPerson][letra].forEach((ex,index)=>{
-if(treinoEditMode){
-exs+=`<div class="exercise"><span>${escapeHtml(ex)}</span><button class="danger" onclick="removeExercise('${escapeJs(currentPerson)}','${escapeJs(letra)}',${index})">X</button></div>`;
-}else{
-exs+=`<div class="exercise"><span>${escapeHtml(ex)}</span></div>`;
-}
-});
+function renderViewSection(section, sIndex){
+  let html = `
+  <section class="section">
+    <div class="section-head">
+      <div class="section-title">
+        <span class="section-icon">${escapeHtml(iconBySectionName(section.title))}</span>
+        <span>${escapeHtml(section.title)}</span>
+      </div>
+      <div class="time-pill">${escapeHtml(section.time || "0")} min</div>
+    </div>`;
 
-const safeId = makeSafeId(currentPerson+"-"+letra);
+  if(!section.exercises.length){
+    html += '<div class="empty">Nenhum exercício cadastrado.</div>';
+  }
 
-if(treinoEditMode){
-html+=`<div class="card">
-<div class="category-title-row">
-<div class="row" style="align-items:center">
-<input id="catNome-${safeId}" value="${escapeHtml(letra)}" placeholder="Nome da categoria">
-<button class="primary" onclick="renameCategoriaTreino('${escapeJs(letra)}','${safeId}')">Salvar nome</button>
-</div>
-<div class="category-actions">
-<button class="danger" onclick="removeCategoriaTreino('${escapeJs(letra)}')">Remover categoria</button>
-</div>
-</div>
+  section.exercises.forEach(ex=>{
+    const embed = youtubeEmbed(ex.youtube);
+    html += `
+      <div class="exercise-view">
+        <div class="exercise-main">
+          <div class="exercise-left">
+            <div class="exercise-icon">${escapeHtml(ex.icon || "🏃")}</div>
+            <div>
+              <div class="exercise-name">${escapeHtml(ex.name)}</div>
+              <div class="exercise-info">${escapeHtml(ex.info)}</div>
+            </div>
+          </div>
+          <div class="arrow">→</div>
+        </div>
+        <div class="metrics">
+          <div class="metric"><small>Séries</small><strong>${escapeHtml(ex.series || "–")}</strong></div>
+          <div class="metric"><small>Repetições</small><strong>${escapeHtml(ex.reps || "–")}</strong></div>
+          <div class="metric"><small>Carga</small><strong>${escapeHtml(ex.carga || "–")}</strong></div>
+          <div class="metric"><small>Descanso</small><strong>${escapeHtml(ex.descanso || "–")}</strong></div>
+        </div>
+      </div>
+      ${embed ? `<iframe class="youtube" src="${embed}" allowfullscreen></iframe>` : ""}
+    `;
+  });
 
-${exs}
-
-<div class="row" style="margin-top:10px">
-<input id="ex-${safeId}" placeholder="Novo exercício">
-<button class="primary" onclick="addExercise('${escapeJs(currentPerson)}','${escapeJs(letra)}','${safeId}')">Adicionar exercício</button>
-</div>
-</div>`;
-}else{
-html+=`<div class="card">
-<div class="category-title-row">
-<h1>Treino ${escapeHtml(letra)}</h1>
-</div>
-${exs || '<div class="subtitle">Nenhum exercício cadastrado.</div>'}
-</div>`;
-}
-});
-
-area.innerHTML=html;
-saveData();
-}
-
-function makeSafeId(str){
-return String(str).replace(/[^a-zA-Z0-9]/g,"_");
+  html += '</section>';
+  return html;
 }
 
-function escapeJs(str){
-return String(str||"").replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+function renderEditSection(section, sIndex){
+  let html = `
+  <div class="edit-section">
+    <div class="edit-grid">
+      <input value="${escapeHtml(section.icon || "")}" oninput="updateSection(${sIndex}, 'icon', this.value)" placeholder="Ícone">
+      <select onchange="updateSectionType(${sIndex}, this.value)">
+        ${sectionOptions(section.title)}
+      </select>
+      <input value="${escapeHtml(section.time || "")}" oninput="updateSection(${sIndex}, 'time', this.value)" placeholder="Min">
+      <button class="del" onclick="removeSection(${sIndex})">×</button>
+    </div>`;
+
+  section.exercises.forEach((ex, eIndex)=>{
+    html += `
+    <div class="exercise-edit-row">
+      <input value="${escapeHtml(ex.icon || "")}" oninput="updateExercise(${sIndex},${eIndex},'icon',this.value)" placeholder="Ícone">
+      <input value="${escapeHtml(ex.name || "")}" oninput="updateExercise(${sIndex},${eIndex},'name',this.value)" placeholder="Exercício">
+      <textarea oninput="updateExercise(${sIndex},${eIndex},'info',this.value)" placeholder="Descrição">${escapeHtml(ex.info || "")}</textarea>
+      <input value="${escapeHtml(ex.series || "")}" oninput="updateExercise(${sIndex},${eIndex},'series',this.value)" placeholder="Séries">
+      <input value="${escapeHtml(ex.reps || "")}" oninput="updateExercise(${sIndex},${eIndex},'reps',this.value)" placeholder="Repetições">
+      <input value="${escapeHtml(ex.carga || "")}" oninput="updateExercise(${sIndex},${eIndex},'carga',this.value)" placeholder="Carga">
+      <input value="${escapeHtml(ex.descanso || "")}" oninput="updateExercise(${sIndex},${eIndex},'descanso',this.value)" placeholder="Descanso">
+      <button class="del" onclick="removeExercise(${sIndex},${eIndex})">×</button>
+    </div>
+    <div style="margin-top:12px">
+      <input value="${escapeHtml(ex.youtube || "")}" oninput="updateExercise(${sIndex},${eIndex},'youtube',this.value)" placeholder="URL do YouTube">
+    </div>`;
+  });
+
+  html += `<button class="add-btn" onclick="addExercise(${sIndex})">+ adicionar exercício</button></div>`;
+  return html;
 }
 
-function addCategoriaTreino(){
-const input=document.getElementById("novaCategoriaTreino");
-const nome=input.value.trim();
-if(!nome)return;
-if(treinos[currentPerson][nome]){
-alert("Essa categoria já existe.");
-return;
-}
-treinos[currentPerson][nome]=[];
-input.value="";
-renderTreinoArea();
+function updateSection(index, key, value){
+  treinos[currentDay][index][key] = value;
+  saveData();
 }
 
-function renameCategoriaTreino(oldName,safeId){
-const input=document.getElementById("catNome-"+safeId);
-const newName=input.value.trim();
-if(!newName)return;
-if(newName!==oldName && treinos[currentPerson][newName]){
-alert("Já existe uma categoria com esse nome.");
-return;
-}
-treinos[currentPerson][newName]=treinos[currentPerson][oldName];
-if(newName!==oldName) delete treinos[currentPerson][oldName];
-renderTreinoArea();
+function updateExercise(sIndex, eIndex, key, value){
+  treinos[currentDay][sIndex].exercises[eIndex][key] = value;
+  saveData();
 }
 
-function removeCategoriaTreino(nome){
-delete treinos[currentPerson][nome];
-renderTreinoArea();
+function addSection(){
+  treinos[currentDay].push({
+    title:"Aquecimento",
+    icon:iconBySectionName("Aquecimento"),
+    time:"10",
+    exercises:[]
+  });
+  render();
 }
 
-function addExercise(person,letter,safeId){
-const input=document.getElementById("ex-"+safeId);
-if(!input.value.trim())return;
-treinos[person][letter].push(input.value.trim());
-input.value="";
-renderTreinoArea();
+function removeSection(index){
+  treinos[currentDay].splice(index, 1);
+  render();
 }
 
-function removeExercise(person,letter,index){
-treinos[person][letter].splice(index,1);
-renderTreinoArea();
+function addExercise(sIndex){
+  treinos[currentDay][sIndex].exercises.push({
+    icon:"🏃",
+    name:"Novo exercício",
+    info:"",
+    series:"",
+    reps:"",
+    carga:"",
+    descanso:"",
+    youtube:""
+  });
+  render();
 }
 
-renderAlunos();renderHistorico();renderCrossDayTabs();renderCrossfit();renderTreinoArea();
+function removeExercise(sIndex, eIndex){
+  treinos[currentDay][sIndex].exercises.splice(eIndex, 1);
+  render();
+}
+
+renderTabs();
+render();
 </script>
 </body>
 </html>
