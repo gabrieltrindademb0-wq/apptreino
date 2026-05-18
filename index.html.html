@@ -7,15 +7,12 @@
 
 <style>
 :root{
-  --bg:#07111f;
-  --panel:#0b1628;
-  --card:#13223a;
-  --line:rgba(255,255,255,.12);
   --text:#f8fafc;
   --muted:#9fb0c7;
   --primary:#19e58c;
   --secondary:#1aa7ff;
   --accent:#ff7a18;
+  --line:rgba(255,255,255,.12);
 }
 *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,Arial,sans-serif}
 body{
@@ -66,13 +63,12 @@ body{
 }
 .container{
   max-width:1240px;
-  margin:0 auto;
+  margin:44px auto 0;
   background:linear-gradient(180deg,rgba(15,29,52,.96),rgba(7,17,31,.98));
   border:1px solid rgba(255,255,255,.10);
   border-radius:26px;
   box-shadow:0 24px 90px rgba(0,0,0,.42);
   padding:34px;
-  margin-top:44px;
 }
 .mode{
   display:inline-flex;
@@ -138,7 +134,6 @@ body{
   border-radius:17px;
   background:linear-gradient(135deg,rgba(25,229,140,.18),rgba(26,167,255,.14));
   border:1px solid rgba(25,229,140,.42);
-  color:var(--primary);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -219,9 +214,7 @@ body{
   font-size:12px;
   margin-bottom:12px;
 }
-.metric strong{
-  font-size:22px;
-}
+.metric strong{font-size:22px}
 .youtube{
   margin-top:12px;
   width:100%;
@@ -258,11 +251,13 @@ body{
 <main class="container">
   <div class="mode">Modo: <span>visualização</span></div>
   <div class="day-tabs" id="dayTabs"></div>
-  <div id="content"></div>
+  <div id="content">
+    <div class="empty">Carregando treinos...</div>
+  </div>
 </main>
 
 <script>
-const API_URL = "COLE_AQUI_O_LINK_DA_SUA_API";
+const API_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnTXYWFMEEP5SeulJB_U9VDtZ-HdH7kULtQuBeZZP13ILm19-z0sttBTgFP9_eHZ6zAglseJYi9XfrvGQ0-OjdSCr32XvWQ3SJGAHBzeSoNsDARdu4lsQgOm9FIXILFH5C3wDI8oDoiRHGRyGr6eJ4YinzwV-6oEpbtNrsCp4IH7RhcVf8VbKS4PW6Q0YLeqPazvHHbjYF4a1Qx54XJRlYZKH8TRnBrfKq32UTKjG_QQebRQbzFR5XSavmbSH3xtGB6_OpSuN2gduH-RY_4&lib=M3U3XonLC9hA4eBuugyms0QTwzsJJmP1z";
 
 const dias = ["Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 let currentDay = "Segunda";
@@ -296,12 +291,10 @@ function youtubeEmbed(url){
 
 function iconBySectionName(nome){
   nome = String(nome || "").toLowerCase();
-
   if(nome.includes("aquecimento")) return "🔥";
   if(nome.includes("warm")) return "🏃";
   if(nome.includes("skill")) return "🎯";
   if(nome.includes("wod")) return "⚡";
-
   return "💪";
 }
 
@@ -383,55 +376,68 @@ function renderViewSection(section){
   return html;
 }
 
-async function carregarTreinosDaPlanilha(){
-  try{
-    const resposta = await fetch(API_URL);
-    const dados = await resposta.json();
+function carregarTreinosDaPlanilha(){
+  const antigo = document.getElementById("jsonpTreinos");
+  if(antigo) antigo.remove();
 
-    treinos = {
-      "Segunda":[],
-      "Terça":[],
-      "Quarta":[],
-      "Quinta":[],
-      "Sexta":[],
-      "Sábado":[]
-    };
-
-    dados.forEach(item => {
-      const dia = String(item.Dia || item.dia || "").trim();
-      const secao = String(item.Secao || item.Seção || item.secao || item.seção || "").trim();
-
-      if(!treinos[dia]) return;
-
-      treinos[dia].push({
-        title: secao,
-        icon: iconBySectionName(secao),
-        time: item.Tempo || item.tempo || "",
-        exercises:[
-          {
-            icon:"🏋️",
-            name:item.Treino || item.treino || "",
-            info:item.Informacoes || item.Informações || item.informacoes || item.informações || "",
-            series:"–",
-            reps:"–",
-            carga:item.Carga || item.carga || "–",
-            descanso:"–",
-            youtube:item.YouTube || item.Youtube || item.youtube || ""
-          }
-        ]
-      });
-    });
-
-    renderTabs();
-    render();
-
-  }catch(error){
+  const script = document.createElement("script");
+  script.id = "jsonpTreinos";
+  script.src = API_URL + "?callback=receberTreinos&t=" + Date.now();
+  script.onerror = function(){
     document.getElementById("content").innerHTML =
       '<div class="empty">Erro ao carregar os treinos da planilha.</div>';
-    console.error(error);
-  }
+  };
+
+  document.body.appendChild(script);
 }
 
+function receberTreinos(dados){
+  treinos = {
+    "Segunda":[],
+    "Terça":[],
+    "Quarta":[],
+    "Quinta":[],
+    "Sexta":[],
+    "Sábado":[]
+  };
+
+  dados.forEach(item => {
+    const dia = String(item.Dia || item.dia || "").trim();
+
+    const secao = String(
+      item.Secao ||
+      item.Seção ||
+      item.secao ||
+      item.seção ||
+      ""
+    ).trim();
+
+    if(!treinos[dia]) return;
+
+    treinos[dia].push({
+      title: secao,
+      icon: iconBySectionName(secao),
+      time: item.Tempo || item.tempo || "",
+      exercises:[
+        {
+          icon:"🏋️",
+          name:item.Treino || item.treino || "",
+          info:item.Informacoes || item.Informações || item.informacoes || item.informações || "",
+          series:"–",
+          reps:"–",
+          carga:item.Carga || item.carga || "–",
+          descanso:"–",
+          youtube:item.YouTube || item.Youtube || item.youtube || ""
+        }
+      ]
+    });
+  });
+
+  renderTabs();
+  render();
+}
+
+renderTabs();
 carregarTreinosDaPlanilha();
 </script>
 
