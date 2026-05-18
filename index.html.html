@@ -316,6 +316,56 @@ body{
   display:none;
 }
 
+
+.exercise-nav{
+  max-width:520px;
+  margin:10px auto 22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+}
+
+.exercise-nav button{
+  width:48px;
+  height:48px;
+  border:0;
+  border-radius:50%;
+  background:#171b24;
+  color:white;
+  font-size:24px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 14px 28px rgba(0,0,0,.25);
+}
+
+.exercise-nav button:active{
+  transform:scale(.96);
+}
+
+.exercise-nav span{
+  min-width:62px;
+  text-align:center;
+  color:#22ff99;
+  font-size:14px;
+  font-weight:900;
+}
+
+.detail-card{
+  text-align:center;
+}
+
+.detail-card .badge{
+  margin-left:auto;
+  margin-right:auto;
+  justify-content:center;
+}
+
+.detail-info{
+  text-align:center;
+}
+
+
 @media(max-width:640px){
   .app{
     padding:22px 16px 70px;
@@ -399,6 +449,7 @@ const dias = [
 let treinos = [];
 let diaAtual = "Segunda";
 let listaAtual = [];
+let exercicioAtual = 0;
 
 function normalizarTexto(texto){
   return String(texto || "")
@@ -414,6 +465,31 @@ function limparLink(link){
   if(url.startsWith("http://") || url.startsWith("https://")) return url;
   return "https://" + url;
 }
+
+
+function pegarCampo(obj, nomes){
+  for(const nome of nomes){
+    if(obj && obj[nome] !== undefined && obj[nome] !== null && String(obj[nome]).trim() !== ""){
+      return obj[nome];
+    }
+  }
+
+  const chaves = Object.keys(obj || {});
+  for(const nome of nomes){
+    const alvo = normalizarTexto(nome);
+    const chave = chaves.find(k => normalizarTexto(k) === alvo);
+    if(chave && obj[chave] !== undefined && obj[chave] !== null && String(obj[chave]).trim() !== ""){
+      return obj[chave];
+    }
+  }
+
+  return "";
+}
+
+function linkVideo(treino){
+  return limparLink(pegarCampo(treino, ["YouTube", "Youtube", "youtube", "Video", "Vídeo", "video", "Link", "link"]));
+}
+
 
 function youtubeEmbed(url){
   const link = limparLink(url);
@@ -534,7 +610,7 @@ function abrirDia(dia){
 
     const itens = grupos[secao].map(item => `
       <button class="exercise-card" onclick="abrirExercicio(${item.originalIndex})">
-        <div class="thumb">${limparLink(item.YouTube) ? "▶" : ""}</div>
+        <div class="thumb">${linkVideo(item) ? "▶" : ""}</div>
         <div>
           <div class="exercise-name">${item.Treino || "Treino"}</div>
           <div class="exercise-meta">${item.Tempo || ""}${item.Carga ? " • " + item.Carga : ""}</div>
@@ -558,15 +634,17 @@ function abrirDia(dia){
 }
 
 function abrirExercicio(index){
-  const treino = listaAtual[index];
+  exercicioAtual = index;
+
+  const treino = listaAtual[exercicioAtual];
   if(!treino) return;
 
-  const link = limparLink(treino.YouTube);
+  const link = linkVideo(treino);
   const embed = youtubeEmbed(link);
-  const secao = treino.Secao || "Treino";
+  const secao = treino.Secao || treino.Seção || "Treino";
   const emoji = secaoEmoji(secao);
 
-  document.getElementById("exerciseCounter").textContent = `${index + 1} / ${listaAtual.length}`;
+  document.getElementById("exerciseCounter").textContent = `${exercicioAtual + 1} / ${listaAtual.length}`;
 
   document.getElementById("exerciseContent").innerHTML = `
     <div class="video-wrap">
@@ -574,9 +652,15 @@ function abrirExercicio(index){
         ${
           embed
           ? `<iframe src="${embed}" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`
-          : `<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#8d96a5;padding:20px;text-align:center;">Sem vídeo cadastrado</div>`
+          : `<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#b9c7dd;padding:20px;text-align:center;">Sem vídeo cadastrado</div>`
         }
       </div>
+    </div>
+
+    <div class="exercise-nav">
+      <button onclick="treinoAnterior()" aria-label="Treino anterior">‹</button>
+      <span>${exercicioAtual + 1} / ${listaAtual.length}</span>
+      <button onclick="proximoTreino()" aria-label="Próximo treino">›</button>
     </div>
 
     <div class="detail-card">
@@ -593,6 +677,39 @@ function abrirExercicio(index){
 
   mostrar("exerciseView");
 }
+
+function proximoTreino(){
+  if(!listaAtual.length) return;
+  const proximo = exercicioAtual >= listaAtual.length - 1 ? 0 : exercicioAtual + 1;
+  abrirExercicio(proximo);
+}
+
+function treinoAnterior(){
+  if(!listaAtual.length) return;
+  const anterior = exercicioAtual <= 0 ? listaAtual.length - 1 : exercicioAtual - 1;
+  abrirExercicio(anterior);
+}
+
+let toqueInicioX = 0;
+
+document.addEventListener("touchstart", function(e){
+  if(document.getElementById("exerciseView").classList.contains("hidden")) return;
+  toqueInicioX = e.changedTouches[0].screenX;
+}, {passive:true});
+
+document.addEventListener("touchend", function(e){
+  if(document.getElementById("exerciseView").classList.contains("hidden")) return;
+  const toqueFimX = e.changedTouches[0].screenX;
+  const diferenca = toqueFimX - toqueInicioX;
+
+  if(Math.abs(diferenca) > 60){
+    if(diferenca < 0){
+      proximoTreino();
+    }else{
+      treinoAnterior();
+    }
+  }
+}, {passive:true});
 
 function voltarHome(){
   mostrar("homeView");
