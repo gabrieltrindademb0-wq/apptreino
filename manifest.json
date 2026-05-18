@@ -1,7 +1,7 @@
 {
   "name": "Treino",
   "short_name": "Treino",
-  "start_url": "./index.html",
+  "start_url": "/apptreino/index.html",
   "display": "standalone",
   "background_color": "#090b10",
   "theme_color": "#090b10",

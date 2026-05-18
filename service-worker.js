@@ -4,9 +4,11 @@ self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll([
-        "./",
-        "./index.html",
-        "./manifest.json"
+        "/apptreino/",
+        "/apptreino/index.html",
+        "/apptreino/manifest.json",
+        "/apptreino/icon-192.png",
+        "/apptreino/icon-512.png"
       ]);
     })
   );
