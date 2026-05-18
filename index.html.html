@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
 <title>Treino</title>
 
 <style>
@@ -11,225 +10,396 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:Arial, sans-serif;
+  font-family:Arial, Helvetica, sans-serif;
 }
 
 body{
   min-height:100vh;
-  background:
-  radial-gradient(circle at top,#003b5f 0%,#00152b 40%,#000814 100%);
-  color:white;
-  padding:20px;
+  background:#090b10;
+  color:#f5f7fb;
 }
 
-.container{
-  max-width:900px;
-  margin:auto;
+.app{
+  max-width:760px;
+  margin:0 auto;
+  padding:28px 18px 80px;
 }
 
 .header{
   text-align:center;
-  margin-bottom:30px;
+  padding:28px 0 22px;
 }
 
+.logo-icon{
+  width:76px;
+  height:76px;
+  margin:0 auto 18px;
+  border-radius:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  background:rgba(31,255,132,.10);
+  box-shadow:0 0 34px rgba(31,255,132,.35);
+  border:1px solid rgba(31,255,132,.15);
+}
+
+/* Título e subtítulo mantidos */
 .logo{
-  font-size:64px;
+  font-size:50px;
   font-weight:900;
   font-style:italic;
   letter-spacing:2px;
+  line-height:1;
 }
 
 .line{
-  width:140px;
-  height:8px;
+  width:130px;
+  height:7px;
   border-radius:20px;
-  background:linear-gradient(90deg,#00ff9d,#00b7ff);
-  margin:10px auto;
+  background:linear-gradient(90deg,#22ff99,#00b7ff);
+  margin:12px auto;
 }
 
 .subtitle{
   margin-top:12px;
-  color:#9fb3c8;
+  color:#9da6b5;
   letter-spacing:4px;
-  font-size:14px;
+  font-size:13px;
   font-weight:bold;
 }
 
-.card{
-  background:rgba(0,20,50,0.55);
-  border:1px solid rgba(255,255,255,0.08);
-  backdrop-filter:blur(12px);
-  border-radius:28px;
-  padding:25px;
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:72px;
+  margin-bottom:20px;
+  position:relative;
 }
 
-.mode{
-  display:inline-block;
-  padding:12px 20px;
-  border-radius:20px;
-  background:rgba(255,255,255,0.06);
-  margin-bottom:25px;
-  font-weight:bold;
-}
-
-.mode span{
-  color:#33ff99;
-}
-
-.days{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:14px;
-  margin-bottom:25px;
-}
-
-.day-btn{
-  height:62px;
-  border:none;
-  border-radius:20px;
-  background:linear-gradient(180deg,#071c44,#04112c);
+.back-btn{
+  position:absolute;
+  left:0;
+  width:48px;
+  height:48px;
+  border:0;
+  border-radius:50%;
+  background:#171b24;
   color:white;
-  font-size:16px;
-  font-weight:bold;
+  font-size:26px;
   cursor:pointer;
-  transition:0.25s;
-  box-shadow:
-  inset 0 0 0 1px rgba(255,255,255,0.05),
-  0 8px 20px rgba(0,0,0,0.35);
 }
 
-.day-btn.active{
-  background:linear-gradient(90deg,#22ff99,#66ffcc);
-  color:#001b14;
+.page-title{
+  font-size:23px;
+  font-weight:900;
 }
 
-.content{
-  background:rgba(0,0,0,0.18);
-  border-radius:22px;
-  padding:20px;
-  min-height:150px;
+.days-list{
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+.day-card{
+  width:100%;
+  border:1px solid rgba(255,255,255,.07);
+  background:#151922;
+  color:white;
+  border-radius:18px;
+  padding:22px 20px;
+  display:flex;
+  align-items:center;
+  gap:18px;
+  min-height:96px;
+  cursor:pointer;
+  box-shadow:0 18px 28px rgba(0,0,0,.20);
+  text-align:left;
+}
+
+.day-emoji{
+  min-width:58px;
+  height:58px;
+  border-radius:14px;
+  background:#0d3425;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+}
+
+.day-info{
+  flex:1;
+}
+
+.day-name{
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:6px;
+}
+
+.day-sub{
+  color:#858d9b;
+  font-size:15px;
+  font-weight:700;
+}
+
+.arrow{
+  color:#858d9b;
+  font-size:34px;
+}
+
+.section{
+  margin:28px 0 36px;
+}
+
+.section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:0 4px 14px;
+  border-bottom:1px solid rgba(255,255,255,.12);
+  margin-bottom:18px;
+}
+
+.section-title{
+  font-size:25px;
+  font-weight:900;
+  color:#45baf2;
+}
+
+.section-title.aquecimento,
+.section-title.warmup{
+  color:#ff8b3d;
+}
+
+.section-title.skill{
+  color:#38e378;
+}
+
+.section-title.wod{
+  color:#ff3f7f;
+}
+
+.section-count{
+  min-width:38px;
+  height:28px;
+  padding:0 10px;
+  border-radius:999px;
+  background:#0d3425;
+  color:#38e378;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+}
+
+.exercise-card{
+  width:100%;
+  border:0;
+  background:#262b34;
+  color:white;
+  border-radius:14px;
+  padding:16px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:12px;
+  min-height:78px;
+  cursor:pointer;
+  text-align:left;
+}
+
+.thumb{
+  min-width:54px;
+  height:54px;
+  border-radius:12px;
+  background:#030303;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+}
+
+.exercise-name{
+  flex:1;
+  font-size:17px;
+  font-weight:800;
+  line-height:1.25;
+}
+
+.exercise-meta{
+  color:#9ca4b2;
+  font-size:13px;
+  margin-top:5px;
 }
 
 .empty{
-  color:#c9d2dd;
-  font-size:20px;
+  margin-top:22px;
+  background:#151922;
+  color:#aeb6c4;
+  border-radius:18px;
+  padding:22px;
+  font-size:17px;
+  border:1px solid rgba(255,255,255,.06);
 }
 
-.treino-card{
-  background:rgba(255,255,255,0.04);
+.video-wrap{
+  margin:38px auto 28px;
+  max-width:520px;
   border-radius:18px;
-  padding:18px;
-  margin-bottom:18px;
-  border:1px solid rgba(255,255,255,0.06);
+  overflow:hidden;
+  background:#111;
+  box-shadow:0 22px 45px rgba(0,0,0,.35);
+}
+
+.video-box{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  background:#000;
+}
+
+.video-box iframe{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
+}
+
+.detail-card{
+  max-width:520px;
+  margin:0 auto;
 }
 
 .badge{
-  display:inline-block;
-  padding:6px 12px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 13px;
   border-radius:999px;
   font-size:13px;
-  font-weight:bold;
-  margin-bottom:12px;
+  font-weight:900;
+  background:#0e3041;
+  color:#45baf2;
+  margin-bottom:18px;
 }
 
-.aquecimento{
-  background:#ff9800;
-  color:black;
-}
-
-.warmup{
-  background:#ff9800;
-  color:black;
-}
-
-.skill{
-  background:#00b7ff;
-}
-
-.wod{
-  background:#ff2d75;
-}
-
-.titulo{
+.detail-title{
   font-size:26px;
-  font-weight:bold;
-  margin-bottom:10px;
+  font-weight:900;
+  margin-bottom:14px;
 }
 
-.info{
-  margin:6px 0;
-  color:#d7e1ea;
+.detail-info{
+  color:#b3bac7;
+  margin:8px 0;
+  line-height:1.45;
 }
 
-.link{
+.video-link{
   display:inline-block;
-  margin-top:12px;
+  margin-top:18px;
+  background:#22ff99;
+  color:#03140d;
   text-decoration:none;
-  color:#001b14;
-  background:linear-gradient(90deg,#22ff99,#66ffcc);
-  padding:12px 16px;
-  border-radius:14px;
-  font-weight:bold;
+  padding:14px 18px;
+  border-radius:999px;
+  font-weight:900;
+  box-shadow:0 0 24px rgba(34,255,153,.28);
 }
 
-@media(max-width:700px){
-  body{
-    padding:18px;
-  }
+.hidden{
+  display:none;
+}
 
-  .days{
-    grid-template-columns:1fr 1fr;
+@media(max-width:640px){
+  .app{
+    padding:22px 16px 70px;
   }
 
   .logo{
-    font-size:48px;
+    font-size:44px;
+  }
+
+  .subtitle{
+    font-size:11px;
+    letter-spacing:3px;
+  }
+
+  .day-card{
+    min-height:90px;
+    padding:18px 16px;
+  }
+
+  .day-name{
+    font-size:18px;
+  }
+
+  .section-title{
+    font-size:23px;
   }
 }
 </style>
 </head>
 
 <body>
+<div class="app">
 
-<div class="container">
+  <div id="homeView">
+    <div class="header">
+      <div class="logo-icon">🏋️</div>
 
-  <div class="header">
-    <div class="logo">TREINO</div>
-    <div class="line"></div>
-    <div class="subtitle">
-      TREINO • PERFORMANCE • EVOLUÇÃO
+      <div class="logo">TREINO</div>
+      <div class="line"></div>
+      <div class="subtitle">TREINO • PERFORMANCE • EVOLUÇÃO</div>
     </div>
+
+    <div class="days-list" id="daysList"></div>
   </div>
 
-  <div class="card">
-
-    <div class="mode">
-      Modo: <span>VISUALIZAÇÃO</span>
+  <div id="dayView" class="hidden">
+    <div class="topbar">
+      <button class="back-btn" onclick="voltarHome()">‹</button>
+      <div class="page-title" id="dayTitle"></div>
     </div>
 
-    <div class="days">
-      <button class="day-btn active" onclick="selecionarDia('Segunda',this)">SEGUNDA</button>
-      <button class="day-btn" onclick="selecionarDia('Terça',this)">TERÇA</button>
-      <button class="day-btn" onclick="selecionarDia('Quarta',this)">QUARTA</button>
-      <button class="day-btn" onclick="selecionarDia('Quinta',this)">QUINTA</button>
-      <button class="day-btn" onclick="selecionarDia('Sexta',this)">SEXTA</button>
-      <button class="day-btn" onclick="selecionarDia('Sábado',this)">SÁBADO</button>
-    </div>
+    <div id="dayContent"></div>
+  </div>
 
-    <div class="content" id="content">
-      <div class="empty">
-        Carregando treinos...
+  <div id="exerciseView" class="hidden">
+    <div class="topbar">
+      <button class="back-btn" onclick="voltarDia()">‹</button>
+      <div>
+        <div style="color:#8d96a5;font-size:14px;text-align:center;">do exercício</div>
+        <div id="exerciseCounter" style="color:#22ff99;font-size:13px;font-weight:900;text-align:center;margin-top:4px;"></div>
       </div>
     </div>
 
+    <div id="exerciseContent"></div>
   </div>
+
 </div>
 
 <script>
 const API_URL =
 "https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnR7IKQS3ueT0XcuTQynxukp0mJUp-OrgBRCD4Y380fz-dBO90zgqu0whtBXGb1cxnllv51MYNm9pPUMQAuZz-_6iepgdBot3A6FLszY03GZKfGZb-FHPt_oeXD7FFDcJsJTsaZmIxlGaXstG7pqmCAUrq1NVD0t4WamCwIdAlF1O6T1HilIYYZbbyy7gHAfTmB3nV-SCx6kW-KsckyNYqrJS6vP_1CosjUtcqH0kXGTglNed-bFNLUKos5zluCdV9hZlmItaAia34-95Ae1Y737yrh7IQ&lib=M3U3XonLC9hA4eBuugyms0QTwzsJJmP1z";
 
+const dias = [
+  {key:"Segunda", label:"Segunda-feira", emoji:"💪"},
+  {key:"Terça", label:"Terça-feira", emoji:"🔥"},
+  {key:"Quarta", label:"Quarta-feira", emoji:"⚡"},
+  {key:"Quinta", label:"Quinta-feira", emoji:"🏆"},
+  {key:"Sexta", label:"Sexta-feira", emoji:"💥"},
+  {key:"Sábado", label:"Sábado", emoji:"🎯"}
+];
+
 let treinos = [];
 let diaAtual = "Segunda";
+let listaAtual = [];
 
 function normalizarTexto(texto){
   return String(texto || "")
@@ -239,134 +409,201 @@ function normalizarTexto(texto){
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-function carregarTreinosDaPlanilha(){
-  fetch(API_URL)
-    .then(res => {
-      if(!res.ok){
-        throw new Error("Erro HTTP: " + res.status);
-      }
+function limparLink(link){
+  const url = String(link || "").trim();
+  if(!url) return "";
+  if(url.startsWith("http://") || url.startsWith("https://")) return url;
+  return "https://" + url;
+}
 
-      return res.json();
-    })
+function youtubeEmbed(url){
+  const link = limparLink(url);
+  if(!link) return "";
+
+  let id = "";
+
+  try{
+    const u = new URL(link);
+
+    if(u.hostname.includes("youtu.be")){
+      id = u.pathname.replace("/", "");
+    }
+
+    if(u.hostname.includes("youtube.com")){
+      if(u.pathname.includes("/shorts/")){
+        id = u.pathname.split("/shorts/")[1].split("/")[0];
+      }else if(u.searchParams.get("v")){
+        id = u.searchParams.get("v");
+      }
+    }
+  }catch(e){}
+
+  if(!id) return "";
+
+  return "https://www.youtube.com/embed/" + id;
+}
+
+function secaoClasse(secao){
+  const s = normalizarTexto(secao);
+  if(s.includes("aquecimento")) return "aquecimento";
+  if(s.includes("warm")) return "warmup";
+  if(s.includes("skill") || s.includes("habilidade")) return "skill";
+  if(s.includes("wod")) return "wod";
+  if(s.includes("along")) return "alongamento";
+  return "alongamento";
+}
+
+function secaoEmoji(secao){
+  const s = normalizarTexto(secao);
+  if(s.includes("along")) return "🧘";
+  if(s.includes("aquecimento")) return "🔥";
+  if(s.includes("warm")) return "🔥";
+  if(s.includes("skill") || s.includes("habilidade")) return "🎯";
+  if(s.includes("wod")) return "🏋️";
+  return "💪";
+}
+
+function mostrar(view){
+  document.getElementById("homeView").classList.add("hidden");
+  document.getElementById("dayView").classList.add("hidden");
+  document.getElementById("exerciseView").classList.add("hidden");
+  document.getElementById(view).classList.remove("hidden");
+  window.scrollTo(0,0);
+}
+
+function carregar(){
+  renderDias();
+
+  fetch(API_URL)
+    .then(res => res.json())
     .then(data => {
       treinos = Array.isArray(data) ? data : [];
-      renderizarTreinos();
+      renderDias();
     })
-    .catch(error => {
-      console.error(error);
-
-      document.getElementById("content").innerHTML =
+    .catch(err => {
+      console.error(err);
+      document.getElementById("daysList").innerHTML =
         '<div class="empty">Erro ao carregar os treinos da planilha.</div>';
     });
 }
 
-function selecionarDia(dia,botao){
+function renderDias(){
+  const area = document.getElementById("daysList");
+
+  area.innerHTML = dias.map(dia => {
+    const qtd = treinos.filter(t => normalizarTexto(t.Dia) === normalizarTexto(dia.key)).length;
+    const texto = qtd > 0 ? `${qtd} treino${qtd > 1 ? "s" : ""} disponível${qtd > 1 ? "s" : ""}` : "Toque para ver o treino";
+
+    return `
+      <button class="day-card" onclick="abrirDia('${dia.key}')">
+        <div class="day-emoji">${dia.emoji}</div>
+        <div class="day-info">
+          <div class="day-name">${dia.label}</div>
+          <div class="day-sub">${texto}</div>
+        </div>
+        <div class="arrow">›</div>
+      </button>
+    `;
+  }).join("");
+}
+
+function abrirDia(dia){
   diaAtual = dia;
+  const config = dias.find(d => normalizarTexto(d.key) === normalizarTexto(dia));
+  document.getElementById("dayTitle").innerHTML = `${config ? config.emoji : "💪"} ${config ? config.label : dia}`;
 
-  document.querySelectorAll(".day-btn")
-    .forEach(btn => btn.classList.remove("active"));
+  listaAtual = treinos.filter(t => normalizarTexto(t.Dia) === normalizarTexto(diaAtual));
 
-  botao.classList.add("active");
+  const area = document.getElementById("dayContent");
 
-  renderizarTreinos();
-}
-
-function getClasseSecao(secao){
-  const s = normalizarTexto(secao);
-
-  if(s.includes("aquecimento")) return "aquecimento";
-  if(s.includes("warm")) return "warmup";
-  if(s.includes("skill")) return "skill";
-  if(s.includes("wod")) return "wod";
-
-  return "skill";
-}
-
-function getEmojiSecao(secao){
-  const s = normalizarTexto(secao);
-
-  if(s.includes("aquecimento")) return "🔥";
-  if(s.includes("warm")) return "⚡";
-  if(s.includes("skill")) return "🎯";
-  if(s.includes("wod")) return "🏋️";
-
-  return "💪";
-}
-
-function limparLink(link){
-  const url = String(link || "").trim();
-
-  if(!url) return "";
-
-  if(url.startsWith("http://") || url.startsWith("https://")){
-    return url;
-  }
-
-  return "https://" + url;
-}
-
-function renderizarTreinos(){
-  const area = document.getElementById("content");
-
-  const filtrados = treinos.filter(t =>
-    normalizarTexto(t.Dia) === normalizarTexto(diaAtual)
-  );
-
-  if(filtrados.length === 0){
-    area.innerHTML =
-      '<div class="empty">Nenhum treino encontrado.</div>';
-
+  if(listaAtual.length === 0){
+    area.innerHTML = '<div class="empty">Nenhum treino encontrado para este dia.</div>';
+    mostrar("dayView");
     return;
   }
 
-  area.innerHTML = "";
-
-  filtrados.forEach(treino => {
-    const card = document.createElement("div");
-    card.className = "treino-card";
-
-    const classe = getClasseSecao(treino.Secao);
-    const emoji = getEmojiSecao(treino.Secao);
-    const linkVideo = limparLink(treino.YouTube);
-
-    card.innerHTML = `
-      <div class="badge ${classe}">
-        ${emoji} ${treino.Secao || "Treino"}
-      </div>
-
-      <div class="titulo">
-        ${treino.Treino || "-"}
-      </div>
-
-      <div class="info">
-        ⏱ Tempo: ${treino.Tempo || "-"}
-      </div>
-
-      <div class="info">
-        🏋️ Carga: ${treino.Carga || "-"}
-      </div>
-
-      <div class="info">
-        📝 ${treino.Informacoes || "-"}
-      </div>
-
-      ${
-        linkVideo
-        ?
-        `<a class="link" href="${linkVideo}" target="_blank" rel="noopener noreferrer">
-          ▶ Ver vídeo
-        </a>`
-        :
-        ""
-      }
-    `;
-
-    area.appendChild(card);
+  const grupos = {};
+  listaAtual.forEach((t, index) => {
+    const secao = String(t.Secao || "Treino").trim();
+    if(!grupos[secao]) grupos[secao] = [];
+    grupos[secao].push({...t, originalIndex:index});
   });
+
+  area.innerHTML = Object.keys(grupos).map(secao => {
+    const classe = secaoClasse(secao);
+    const emoji = secaoEmoji(secao);
+
+    const itens = grupos[secao].map(item => `
+      <button class="exercise-card" onclick="abrirExercicio(${item.originalIndex})">
+        <div class="thumb">${limparLink(item.YouTube) ? "▶" : ""}</div>
+        <div>
+          <div class="exercise-name">${item.Treino || "Treino"}</div>
+          <div class="exercise-meta">${item.Tempo || ""}${item.Carga ? " • " + item.Carga : ""}</div>
+        </div>
+        <div class="arrow">›</div>
+      </button>
+    `).join("");
+
+    return `
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title ${classe}">${emoji} ${secao}</div>
+          ${grupos[secao].length > 1 ? `<div class="section-count">${grupos[secao].length}</div>` : ""}
+        </div>
+        ${itens}
+      </div>
+    `;
+  }).join("");
+
+  mostrar("dayView");
 }
 
-carregarTreinosDaPlanilha();
-</script>
+function abrirExercicio(index){
+  const treino = listaAtual[index];
+  if(!treino) return;
 
+  const link = limparLink(treino.YouTube);
+  const embed = youtubeEmbed(link);
+  const secao = treino.Secao || "Treino";
+  const emoji = secaoEmoji(secao);
+
+  document.getElementById("exerciseCounter").textContent = `${index + 1} / ${listaAtual.length}`;
+
+  document.getElementById("exerciseContent").innerHTML = `
+    <div class="video-wrap">
+      <div class="video-box">
+        ${
+          embed
+          ? `<iframe src="${embed}" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`
+          : `<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#8d96a5;padding:20px;text-align:center;">Sem vídeo cadastrado</div>`
+        }
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="badge">${emoji} ${secao}</div>
+      <div class="detail-title">${treino.Treino || "Treino"}</div>
+
+      ${treino.Tempo ? `<div class="detail-info">⏱ Tempo: ${treino.Tempo}</div>` : ""}
+      ${treino.Carga ? `<div class="detail-info">🏋️ Carga: ${treino.Carga}</div>` : ""}
+      ${treino.Informacoes ? `<div class="detail-info">📝 ${treino.Informacoes}</div>` : ""}
+
+      ${link ? `<a class="video-link" href="${link}" target="_blank" rel="noopener noreferrer">Assistir no YouTube</a>` : ""}
+    </div>
+  `;
+
+  mostrar("exerciseView");
+}
+
+function voltarHome(){
+  mostrar("homeView");
+}
+
+function voltarDia(){
+  abrirDia(diaAtual);
+}
+
+carregar();
+</script>
 </body>
 </html>
