@@ -454,6 +454,35 @@ let diaAtual = "Segunda";
 let listaAtual = [];
 let exercicioAtual = 0;
 
+const CACHE_TREINOS = "meu_treino_cache_v1";
+const CACHE_DATA = "meu_treino_cache_data_v1";
+let carregandoTreinos = false;
+
+function salvarTreinosNoCache(data){
+  try{
+    if(!Array.isArray(data)) return;
+    localStorage.setItem(CACHE_TREINOS, JSON.stringify(data));
+    localStorage.setItem(CACHE_DATA, new Date().toLocaleString("pt-BR"));
+  }catch(e){}
+}
+
+function carregarTreinosDoCache(){
+  try{
+    const salvo = localStorage.getItem(CACHE_TREINOS);
+    if(!salvo) return false;
+
+    const data = JSON.parse(salvo);
+    if(!Array.isArray(data)) return false;
+
+    treinos = data;
+    renderDias();
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+
 function normalizarTexto(texto){
   return String(texto || "")
     .trim()
@@ -549,20 +578,50 @@ function mostrar(view){
   window.scrollTo(0,0);
 }
 
-function carregar(){
+async function carregar(){
   renderDias();
 
-  fetch(API_URL)
-    .then(res => res.json())
-    .then(data => {
-      treinos = Array.isArray(data) ? data : [];
-      renderDias();
-    })
-    .catch(err => {
-      console.error(err);
+  const carregouCache = carregarTreinosDoCache();
+
+  if(!carregouCache){
+    document.getElementById("daysList").innerHTML =
+      '<div class="empty">Carregando treinos...</div>';
+  }
+
+  if(carregandoTreinos) return;
+  carregandoTreinos = true;
+
+  try{
+    const separador = API_URL.includes("?") ? "&" : "?";
+    const urlAtualizada = API_URL + separador + "_atualizar=" + Date.now();
+
+    const res = await fetch(urlAtualizada, {
+      cache: "no-store",
+      headers: {
+        "Accept": "application/json"
+      }
+    });
+
+    if(!res.ok){
+      throw new Error("Erro ao buscar planilha");
+    }
+
+    const data = await res.json();
+
+    treinos = Array.isArray(data) ? data : [];
+    salvarTreinosNoCache(treinos);
+    renderDias();
+
+  }catch(err){
+    console.error(err);
+
+    if(!carregouCache){
       document.getElementById("daysList").innerHTML =
         '<div class="empty">Erro ao carregar os treinos da planilha.</div>';
-    });
+    }
+  }finally{
+    carregandoTreinos = false;
+  }
 }
 
 function renderDias(){
@@ -727,7 +786,11 @@ carregar();
 
 <script>
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
+  navigator.serviceWorker.register("service-worker.js")
+    .then(reg => {
+      if(reg && reg.update) reg.update();
+    })
+    .catch(err => console.error("Erro no service worker:", err));
 }
 </script>
 
