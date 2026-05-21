@@ -3,9 +3,10 @@
   "short_name": "Treino",
   "start_url": "/apptreino/index.html",
   "display": "standalone",
-  "background_color": "#090b10",
-  "theme_color": "#090b10",
+  "background_color": "#05070b",
+  "theme_color": "#05070b",
   "orientation": "portrait",
+  "scope": "/apptreino/",
   "icons": [
     {
       "src": "icon-192.png",
@@ -17,6 +18,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "scope": "/apptreino/"
+  ]
 }
