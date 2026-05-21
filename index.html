@@ -456,7 +456,60 @@ let exercicioAtual = 0;
 
 const CACHE_TREINOS = "meu_treino_cache_v1";
 const CACHE_DATA = "meu_treino_cache_data_v1";
+const ROTA_PADRAO = "home";
 let carregandoTreinos = false;
+
+function rotaAtual(){
+  const hash = window.location.hash.replace("#", "");
+  if(!hash) return { view: ROTA_PADRAO };
+
+  const params = new URLSearchParams(hash);
+  return {
+    view: params.get("view") || ROTA_PADRAO,
+    dia: params.get("dia") || "Segunda",
+    index: Number(params.get("index") || 0)
+  };
+}
+
+function atualizarRota(view, dados = {}){
+  const url = new URL(window.location.href);
+
+  if(view === "home"){
+    url.hash = "";
+  }else{
+    const params = new URLSearchParams();
+    params.set("view", view);
+    if(dados.dia) params.set("dia", dados.dia);
+    if(dados.index !== undefined) params.set("index", dados.index);
+    url.hash = params.toString();
+  }
+
+  history.replaceState(null, "", url.pathname + url.search + url.hash);
+}
+
+function restaurarRota(){
+  const rota = rotaAtual();
+
+  if(rota.view === "dia"){
+    abrirDia(rota.dia || diaAtual, false);
+    return;
+  }
+
+  if(rota.view === "exercicio"){
+    const dia = rota.dia || diaAtual;
+    abrirDia(dia, false);
+
+    if(listaAtual.length){
+      const indexSeguro = Number.isFinite(rota.index)
+        ? Math.max(0, Math.min(rota.index, listaAtual.length - 1))
+        : 0;
+      abrirExercicio(indexSeguro, false);
+    }
+    return;
+  }
+
+  mostrar("homeView");
+}
 
 function salvarTreinosNoCache(data){
   try{
@@ -547,7 +600,7 @@ function youtubeEmbed(url){
 
   if(!id) return "";
 
-  return "https://www.youtube.com/embed/" + id;
+  return "https://www.youtube.com/embed/" + id + "?mute=1&playsinline=1&rel=0&modestbranding=1";
 }
 
 function secaoClasse(secao){
@@ -583,7 +636,9 @@ async function carregar(){
 
   const carregouCache = carregarTreinosDoCache();
 
-  if(!carregouCache){
+  if(carregouCache){
+    restaurarRota();
+  }else{
     document.getElementById("daysList").innerHTML =
       '<div class="empty">Carregando treinos...</div>';
   }
@@ -611,6 +666,7 @@ async function carregar(){
     treinos = Array.isArray(data) ? data : [];
     salvarTreinosNoCache(treinos);
     renderDias();
+    restaurarRota();
 
   }catch(err){
     console.error(err);
@@ -644,8 +700,9 @@ function renderDias(){
   }).join("");
 }
 
-function abrirDia(dia){
+function abrirDia(dia, salvarNaRota = true){
   diaAtual = dia;
+  if(salvarNaRota) atualizarRota("dia", { dia });
   const config = dias.find(d => normalizarTexto(d.key) === normalizarTexto(dia));
   document.getElementById("dayTitle").innerHTML = `${config ? config.emoji : "💪"} ${config ? config.label : dia}`;
 
@@ -695,11 +752,13 @@ function abrirDia(dia){
   mostrar("dayView");
 }
 
-function abrirExercicio(index){
+function abrirExercicio(index, salvarNaRota = true){
   exercicioAtual = index;
 
   const treino = listaAtual[exercicioAtual];
   if(!treino) return;
+
+  if(salvarNaRota) atualizarRota("exercicio", { dia: diaAtual, index: exercicioAtual });
 
   const link = linkVideo(treino);
   const embed = youtubeEmbed(link);
@@ -713,7 +772,7 @@ function abrirExercicio(index){
       <div class="video-box">
         ${
           embed
-          ? `<iframe src="${embed}" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`
+          ? `<iframe src="${embed}" title="Vídeo do treino sem áudio" allowfullscreen allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`
           : `<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#b9c7dd;padding:20px;text-align:center;">Sem vídeo cadastrado</div>`
         }
       </div>
@@ -774,12 +833,17 @@ document.addEventListener("touchend", function(e){
 }, {passive:true});
 
 function voltarHome(){
+  atualizarRota("home");
   mostrar("homeView");
 }
 
 function voltarDia(){
   abrirDia(diaAtual);
 }
+
+window.addEventListener("hashchange", function(){
+  if(treinos.length) restaurarRota();
+});
 
 carregar();
 </script>

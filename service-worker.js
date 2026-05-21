@@ -1,4 +1,4 @@
-const CACHE_NAME = "treino-app-v3";
+const CACHE_NAME = "treino-app-v4";
 
 const APP_SHELL = [
   "/apptreino/",
